@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Button, HStack, Input } from '@chakra-ui/react';
 import supabase from '../supabase.js';
+import { useToast } from '@chakra-ui/react';
 
 const AddTask = () => {
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const toast = useToast();
 
     const handleAdd = async () => {
         setLoading(true);
@@ -14,13 +17,14 @@ const AddTask = () => {
             .select();
         setLoading(false);
 
-        if(error) {
-            console.log(error.message);
-        }
-
-        if(data) {
-            setText('');
-        }
+        toast({
+            title: error?.message || 'Task added!',
+            position: 'top',
+            status: error ? 'error' : 'success',
+            duration: 2000,
+            isClosable: true
+        });
+        setText('');
     };
 
     return (
@@ -32,7 +36,7 @@ const AddTask = () => {
                 onChange={(e) => setText(e.target.value)}
                 value={text}
             />
-            <Button colorScheme="blue" px="10" h="100%" type="submit" onClick={handleAdd} isLoading={loading}>
+            <Button colorScheme="blue" px="10" h="100%" type="submit" onClick={handleAdd} isLoading={loading} loadingText="Adding">
                 Add
             </Button>
         </HStack>
