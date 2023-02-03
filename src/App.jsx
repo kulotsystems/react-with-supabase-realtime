@@ -1,20 +1,24 @@
-import { useState } from 'react';
+import { Heading, VStack } from '@chakra-ui/react';
+import AddTask from './components/AddTask.jsx';
+import TaskList from './components/TaskList.jsx';
 
-function App() {
-    const [count, setCount] = useState(0);
+const App = () => {
 
     return (
-        <div className="App">
-            <h1>React with Supabase Realtime</h1>
-            <div className="card">
-                <button onClick={ () => setCount((count) => count + 1) }>
-                    count is { count }
-                </button>
-                <p>
-                    Edit <code>src/App.jsx</code> and save to test HMR
-                </p>
-            </div>
-        </div>
+        <VStack p={4} minH="100vh">
+            <Heading
+                mt="20"
+                p="5"
+                fontWeight="extrabold"
+                size="xl"
+                bgGradient="linear(to-l, teal.300, blue.500)"
+                bgClip="text"
+            >
+                Todo List
+            </Heading>
+            <AddTask/>
+            <TaskList/>
+        </VStack>
     );
 }
 
