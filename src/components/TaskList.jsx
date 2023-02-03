@@ -4,6 +4,7 @@ import ClearTasks from './ClearTasks.jsx';
 import DeleteTask from './DeleteTask.jsx';
 import img from '../assets/empty.svg';
 import supabase from '../supabase.js';
+import _ from 'lodash';
 
 const TaskList = () => {
     const [tasks, setTasks] = useState([]);
@@ -24,9 +25,38 @@ const TaskList = () => {
                 setTasks(tasks);
             }
         };
-
         fetchData().then(response => {});
     }, []);
+
+
+    // subscribe to events
+    const todos = supabase.channel('custom-all-channel')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'todos' },
+            (payload) => {
+                switch (payload.eventType) {
+                    case 'INSERT':
+                        setTasks(tasks.concat(payload.new))
+                        break;
+                    case 'UPDATE':
+                        const updatedTasks = _.cloneDeep(tasks);
+                        updatedTasks.map(task => {
+                            if(task.id === payload.old.id)
+                                task = payload.new;
+                            return task;
+                        });
+                        setTasks(updatedTasks);
+                        break;
+                    case 'DELETE':
+                        const remainingTasks = tasks.filter(task => task.id !== payload.old.id);
+                        setTasks(remainingTasks);
+                        break;
+                    default:
+                        console.log('Unhandled event: ', payload.eventType);
+                }
+            }
+        ).subscribe();
 
 
     // If there are no tasks, show placeholder image
