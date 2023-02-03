@@ -55,7 +55,7 @@ const TaskList = () => {
                         <Text w="100%" p="8px" borderRadius="lg">
                             {task.text}
                         </Text>
-                        <DeleteTask/>
+                        <DeleteTask id={task.id}/>
                     </HStack>
                 ))}
             </VStack>
